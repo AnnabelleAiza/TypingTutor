@@ -2,8 +2,11 @@ package annabellea.typinttutor_annabelle_aizanman;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
@@ -14,11 +17,35 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        var javaVersion = SystemInfo.javaVersion();
-        var javafxVersion = SystemInfo.javafxVersion();
-
-        var label = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        var scene = new Scene(new StackPane(label), 640, 480);
+        VBox root = new VBox();
+        
+        Label title = new Label("Typing Tutor");
+        //title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        
+        Label instructionLabel = new Label("Text to type:");
+        TextField input = new TextField();
+        
+        Label responseLabel = new Label("Your text:");
+        TextField response = new TextField();
+        
+        Label keyLabel = new Label("Key Pressed:");
+        Label keyPressedLabel = new Label("None");
+        
+        Label correctKeysLabel = new Label("Correct:");
+        Label incorrectKeysLabel = new Label("Incorrect:");
+        
+        Label counterLabel = new Label("1 of 6");
+        
+        Button nextButton = new Button("Next");
+        Button resetButton = new Button("Reset");
+        
+        HBox control = new HBox(10, nextButton, resetButton);
+        
+        root.getChildren().addAll(title, instructionLabel, input, responseLabel,
+                response, keyLabel, keyPressedLabel, correctKeysLabel, 
+                incorrectKeysLabel, counterLabel, control);
+        
+        var scene = new Scene(root, 640, 480);
         stage.setScene(scene);
         stage.show();
     }
