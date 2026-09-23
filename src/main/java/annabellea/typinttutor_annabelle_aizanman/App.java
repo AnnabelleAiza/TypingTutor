@@ -36,20 +36,21 @@ public class App extends Application {
         
         Label keyLabel = new Label("Key Pressed:");
         Label keyPressedLabel = new Label("None");
+        HBox pressedKeyBox = new HBox(10, keyLabel, keyPressedLabel);
         
-        Label correctKeysLabel = new Label("Correct:");
-        Label incorrectKeysLabel = new Label("Incorrect:");
+        Label correctKeysLabel = new Label("Correct: 0");
+        Label incorrectKeysLabel = new Label("Incorrect: 0");
+        HBox keysBox = new HBox(30, correctKeysLabel, incorrectKeysLabel);
         
         Label counterLabel = new Label("1 of 6");
         
         Button nextButton = new Button("Next");
         Button resetButton = new Button("Reset");
-        
         HBox control = new HBox(10, nextButton, resetButton);
+        control.setAlignment(Pos.CENTER);
         
-        root.getChildren().addAll(title, inputBox, responseBox, keyLabel, 
-                keyPressedLabel, correctKeysLabel,incorrectKeysLabel,
-                counterLabel, control);
+        root.getChildren().addAll(title, inputBox, responseBox, pressedKeyBox,
+                keysBox, counterLabel, control);
         
         var scene = new Scene(root, 640, 480);
         stage.setScene(scene);
