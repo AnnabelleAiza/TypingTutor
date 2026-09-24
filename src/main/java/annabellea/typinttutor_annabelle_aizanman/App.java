@@ -1,5 +1,7 @@
 package annabellea.typinttutor_annabelle_aizanman;
 
+import java.util.HashMap;
+import java.util.Map;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,6 +20,7 @@ import javafx.stage.Stage;
  * JavaFX App
  */
 public class App extends Application {
+    private Map<KeyCode, Button> keyButtons = new HashMap<>();
 
     @Override
     public void start(Stage stage) {
@@ -29,7 +32,7 @@ public class App extends Application {
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         
         Label instructionLabel = new Label("Text to type:");
-        TextField input = new TextField();
+        Label input = new Label();
         HBox inputBox = new HBox(5, instructionLabel, input);
         
         Label responseLabel = new Label("Your text:");
@@ -46,15 +49,46 @@ public class App extends Application {
         
         Label counterLabel = new Label("1 of 6");
         
+        Label popUp = new Label();
+        
         Button nextButton = new Button("Next");
         Button resetButton = new Button("Reset");
         HBox control = new HBox(10, nextButton, resetButton);
         control.setAlignment(Pos.CENTER);
         
-        //KeyBoard
+        //TEXT TO TYPE
+        String[] texts = {
+            "Try typing this text. Do it as quickly and accurately as you can",
+            "Next type another line of input data", 
+            "The quick brown fox jumps over the lazy dog", 
+            "Five big quacking zephyrs jolt my wax bed", 
+            "Sympathizing would fix Quaker objectives", 
+            "A large fawn jumped quickly over white zinc boxes"
+        };
+
+        //button actions
+        int[] idxCurrentText = {0};
+
+        nextButton.setOnAction(event -> {
+            if(idxCurrentText[0] < 5){
+                idxCurrentText[0]++;
+                input.setText(texts[idxCurrentText[0]]);
+            }
+            counterLabel.setText((idxCurrentText[0] + 1) + " of 6");
+        });
+
+        resetButton.setOnAction(event -> {
+            idxCurrentText[0] = 0;
+            input.setText(texts[0]);
+            response.clear();
+            counterLabel.setText("1 of 6");
+        });
+
+        //Keyboard
         VBox keyboardBox = new VBox(5);
         keyboardBox.setAlignment(Pos.CENTER);
-        
+
+        //row 1 buttons
         HBox row1 = new HBox(5);
         row1.setAlignment(Pos.CENTER);
         
@@ -73,8 +107,10 @@ public class App extends Application {
                 yButton, uButton, iButton, oButton, pButton);
         
         HBox row2 = new HBox(5);
-        row1.setAlignment(Pos.CENTER);
         
+        row2.setAlignment(Pos.CENTER);
+        
+        //row2 buttons
         Button aButton = new Button("A");
         Button sButton = new Button("S");
         Button dButton = new Button("D");
@@ -88,8 +124,9 @@ public class App extends Application {
         row2.getChildren().addAll(aButton, sButton, dButton, fButton, gButton,
                 hButton, jButton, kButton, lButton);
         
+        //row3 buttons
         HBox row3 = new HBox(5);
-        row1.setAlignment(Pos.CENTER);
+        row3.setAlignment(Pos.CENTER);
         
         Button shiftButton = new Button("SHIFT");
         Button zButton = new Button("Z");
@@ -103,6 +140,7 @@ public class App extends Application {
         row3.getChildren().addAll(shiftButton, zButton, xButton, cButton,
                 vButton, bButton, nButton, mButton);
         
+        //space button
         HBox row4 = new HBox();
         row4.setAlignment(Pos.CENTER);
         Button spaceButton = new Button("SPACE");
@@ -112,15 +150,55 @@ public class App extends Application {
 
         root.getChildren().addAll(title, inputBox, responseBox, pressedKeyBox,
                 keysBox, counterLabel, control, keyboardBox);
+
+        //add buttons and keycodes to keycode hash map
+        root.getChildren().addAll(title, inputBox, responseBox, pressedKeyBox,
+                keysBox, counterLabel, control, keyboardBox);
+        
+        //add buttons and keycodes to keycode hash map
+        
+          //row1
+        keyButtons.put(KeyCode.Q, qButton);
+        keyButtons.put(KeyCode.W, wButton);
+        keyButtons.put(KeyCode.E, eButton);
+        keyButtons.put(KeyCode.R, rButton);
+        keyButtons.put(KeyCode.T, tButton);
+        keyButtons.put(KeyCode.Y, yButton);
+        keyButtons.put(KeyCode.U, uButton);
+        keyButtons.put(KeyCode.I, iButton);
+        keyButtons.put(KeyCode.O, oButton);
+        keyButtons.put(KeyCode.P, pButton);
+        
+          //row2
+        keyButtons.put(KeyCode.A, aButton);
+        keyButtons.put(KeyCode.S, sButton);
+        keyButtons.put(KeyCode.D, dButton);
+        keyButtons.put(KeyCode.F, fButton);
+        keyButtons.put(KeyCode.G, gButton);
+        keyButtons.put(KeyCode.H, hButton);
+        keyButtons.put(KeyCode.J, jButton);
+        keyButtons.put(KeyCode.K, kButton);
+        keyButtons.put(KeyCode.L, lButton);
+        
+          //row3
+        keyButtons.put(KeyCode.SHIFT, shiftButton);  
+        keyButtons.put(KeyCode.Z, zButton);
+        keyButtons.put(KeyCode.X, xButton);
+        keyButtons.put(KeyCode.C, cButton);
+        keyButtons.put(KeyCode.V, vButton);
+        keyButtons.put(KeyCode.B, bButton);
+        keyButtons.put(KeyCode.N, nButton);
+        keyButtons.put(KeyCode.M, mButton);
+        
+          //row4
+        keyButtons.put(KeyCode.SPACE, spaceButton);
         
         var scene = new Scene(root, 640, 480);
         
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             System.out.println("Key pressed: " + event.getCode());
             
-            if(event.getCode() == KeyCode.A) {
-                aButton.setStyle("-fx-background-color: lightblue");
-            }
+            highlightKey(event);
             
             if (event.getText().length() > 0) {
                 response.appendText(event.getText());
@@ -136,22 +214,48 @@ public class App extends Application {
         });
 
         scene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-            if(event.getCode() == KeyCode.A) {
-                aButton.setStyle("");
-            }
+            stopHighlightKey(event);
         });
-        
-//        private void highlightKey(Keycode keycode){
-//            
-//        }
-        
+            
+//            if (event.getCode() == KeyCode.SHIFT){
+//                if(){
+////if all the words match up then shift is next, if not send a message ssying "incorrect text"
+//                    
+//                }
+//            }
+ 
         stage.setScene(scene);
         stage.setOnShown(event -> root.requestFocus());
         stage.show();
+    }
+   
+    
+    //highlighting key when touched
+    /**
+     * highlights key when pressed
+     * @param event key is pressed
+     */
+    private void highlightKey(KeyEvent event){
+        Button button = keyButtons.get(event.getCode());
+            
+        if(button != null) {
+            button.setStyle("-fx-background-color: lightblue");
+        }
+    }
+    
+    /**
+     * return key to original color when key is released
+     * @param event key is released
+     */
+    private void stopHighlightKey(KeyEvent event){
+        Button button = keyButtons.get(event.getCode());
+        
+        if(button != null) {
+            button.setStyle("");
+        }
     }
 
     public static void main(String[] args) {
         launch();
     }
-
 }
