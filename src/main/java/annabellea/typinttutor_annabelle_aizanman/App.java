@@ -1,5 +1,5 @@
 package annabellea.typinttutor_annabelle_aizanman;
-
+//cd C:\NetBeansProjectsFolder\TypintTutor_Annabelle_Aizanman
 import java.util.HashMap;
 import java.util.Map;
 import javafx.application.Application;
@@ -61,12 +61,12 @@ public class App extends Application {
         
         //TEXT TO TYPE
         String[] texts = {
-            "Try typing this text. Do it as quickly and accurately as you can",
-            "Next type another line of input data", 
-            "The quick brown fox jumps over the lazy dog", 
-            "Five big quacking zephyrs jolt my wax bed", 
-            "Sympathizing would fix Quaker objectives", 
-            "A large fawn jumped quickly over white zinc boxes"
+            "Try typing this text. Do it as quickly and accurately as you can.",
+            "Next type another line of input data.", 
+            "The quick brown fox jumps over the lazy dog.", 
+            "Five big quacking zephyrs jolt my wax bed.", 
+            "Sympathizing would fix Quaker objectives.", 
+            "A large fawn jumped quickly over white zinc boxes."
         };
 
         //button actions
@@ -74,6 +74,11 @@ public class App extends Application {
         int[] idxCurrentText = {0};
 
         nextButton.setOnAction(event -> {
+            response.setText("");
+            correctCount = 0;
+            correctKeysLabel.setText("Correct: 0");
+            incorrectCount = 0;
+            incorrectKeysLabel.setText("Incorrect: 0");
             if(idxCurrentText[0] < 5){
                 idxCurrentText[0]++;
                 input.setText(texts[idxCurrentText[0]]);
@@ -140,14 +145,16 @@ public class App extends Application {
         Button bButton = new Button("B");
         Button nButton = new Button("N");
         Button mButton = new Button("M");
+        Button dotButton = new Button(".");
         
         row3.getChildren().addAll(shiftButton, zButton, xButton, cButton,
-                vButton, bButton, nButton, mButton);
+                vButton, bButton, nButton, mButton, dotButton);
         
         //space button
         HBox row4 = new HBox();
         row4.setAlignment(Pos.CENTER);
         Button spaceButton = new Button("SPACE");
+        spaceButton.setPrefWidth(250);
         row4.getChildren().add(spaceButton);
         
         keyboardBox.getChildren().addAll(row1, row2, row3, row4);
@@ -190,14 +197,16 @@ public class App extends Application {
         keyButtons.put(KeyCode.B, bButton);
         keyButtons.put(KeyCode.N, nButton);
         keyButtons.put(KeyCode.M, mButton);
+        keyButtons.put(KeyCode.PERIOD, dotButton);
         
           //row4
         keyButtons.put(KeyCode.SPACE, spaceButton);
         
-        var scene = new Scene(root, 640, 480);
+        var scene = new Scene(root, 800, 480);
         
         //when the key is pressed
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+//            System.out.println("key event received");
             highlightKey(event);
             displayKeyPressed(event);
             
@@ -212,16 +221,14 @@ public class App extends Application {
                     shiftPressed = true;
             }
             
-            if (event.getText().length() > 0) {
+            if (button != null && event.getText().length() > 0) {
                 String keyText = event.getText();
                 
                 if(shiftPressed){
                     keyText = keyText.toUpperCase();
                 }
-                
-                response.appendText(keyText);
-                
-                int positionInSentence = response.getText().length() - 1;
+
+                int positionInSentence = response.getText().length();
                 char expected = texts[idxCurrentText[0]].charAt(positionInSentence);
                 
                 if(keyText.charAt(0) == expected){
@@ -229,6 +236,8 @@ public class App extends Application {
                 } else {
                     incorrectCount++;
                 }
+                
+                response.appendText(keyText);
                 
                 correctKeysLabel.setText("Correct: " + correctCount);
                 incorrectKeysLabel.setText("Incorrect: " + incorrectCount);
@@ -249,6 +258,7 @@ public class App extends Application {
                     current = (current + " ");
                 }
             }
+
         });
 
         //when the key is released
