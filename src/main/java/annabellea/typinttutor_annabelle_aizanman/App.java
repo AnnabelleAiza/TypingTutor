@@ -22,6 +22,10 @@ import javafx.stage.Stage;
 public class App extends Application {
     private Map<KeyCode, Button> keyButtons = new HashMap<>();
     private boolean shiftPressed = false;
+    Label correctKeysLabel = new Label("Correct: 0");
+    private int correctCount = 0;
+    Label incorrectKeysLabel = new Label("Incorrect: 0");
+    private int incorrectCount = 0;
 
     @Override
     public void start(Stage stage) {
@@ -42,14 +46,13 @@ public class App extends Application {
         
         Label keyLabel = new Label("Key Pressed:");
         HBox pressedKeyBox = new HBox(10, keyLabel, keyPressedLabel);
-        
-        Label correctKeysLabel = new Label("Correct: 0");
-        Label incorrectKeysLabel = new Label("Incorrect: 0");
+       
         HBox keysBox = new HBox(30, correctKeysLabel, incorrectKeysLabel);
         
         Label counterLabel = new Label("1 of 6");
         
         Label popUp = new Label();
+        popUp.setAlignment(Pos.BOTTOM_CENTER);
         
         Button nextButton = new Button("Next");
         Button resetButton = new Button("Reset");
@@ -67,7 +70,7 @@ public class App extends Application {
         };
 
         //button actions
-        counterLabel.setText(texts[0]);
+        input.setText(texts[0]);
         int[] idxCurrentText = {0};
 
         nextButton.setOnAction(event -> {
@@ -151,7 +154,7 @@ public class App extends Application {
 
         //add buttons and keycodes to keycode hash map
         root.getChildren().addAll(title, inputBox, responseBox, pressedKeyBox,
-                keysBox, counterLabel, control, keyboardBox);
+                keysBox, counterLabel, control, keyboardBox, popUp);
         
         //add buttons and keycodes to keycode hash map
         
@@ -193,11 +196,17 @@ public class App extends Application {
         
         var scene = new Scene(root, 640, 480);
         
+        //when the key is pressed
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            System.out.println("Key pressed: " + event.getCode());
-            
             highlightKey(event);
             displayKeyPressed(event);
+            
+            Button button = keyButtons.get(event.getCode());
+            
+            if(button == null){
+                popUp.setText("NOT HANDLED");
+                popUp.setStyle("-fx-text-fill: red;");
+            }
             
             if(event.getCode() == KeyCode.SHIFT){
                     shiftPressed = true;
@@ -211,6 +220,18 @@ public class App extends Application {
                 }
                 
                 response.appendText(keyText);
+                
+                int positionInSentence = response.getText().length() - 1;
+                char expected = texts[idxCurrentText[0]].charAt(positionInSentence);
+                
+                if(keyText.charAt(0) == expected){
+                    correctCount++;
+                } else {
+                    incorrectCount++;
+                }
+                
+                correctKeysLabel.setText("Correct: " + correctCount);
+                incorrectKeysLabel.setText("Incorrect: " + incorrectCount);
             }
             
             if (event.getCode() == KeyCode.BACK_SPACE){
@@ -230,15 +251,18 @@ public class App extends Application {
             }
         });
 
+        //when the key is released
         scene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
             stopHighlightKey(event);
             
-            if (event.getText().length() > 0) {
-                String keyText = event.getText();
-                
-                if(!shiftPressed){
-                    response.appendText(keyText);
-                }
+            if (event.getCode() == KeyCode.SHIFT) {
+                shiftPressed = false;
+            }
+            
+            Button button = keyButtons.get(event.getCode());
+            
+            if(button == null){
+                popUp.setText("");
             }
         });
  
@@ -250,6 +274,10 @@ public class App extends Application {
     //key pressed
     Label keyPressedLabel = new Label("None");
     
+    /**
+     * shows what key has just been pressed
+     * @param event key is pressed 
+     */
     private void displayKeyPressed(KeyEvent event){
         keyPressedLabel.setText(event.getCode().toString());
     }
