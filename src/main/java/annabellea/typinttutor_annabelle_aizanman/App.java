@@ -1,5 +1,5 @@
 package annabellea.typinttutor_annabelle_aizanman;
-//cd C:\NetBeansProjectsFolder\TypintTutor_Annabelle_Aizanman
+
 import java.util.HashMap;
 import java.util.Map;
 import javafx.application.Application;
@@ -15,6 +15,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+//git hub link:
+//https://github.com/AnnabelleAiza/TypingTutor.git
 
 /**
  * JavaFX App
@@ -206,7 +208,6 @@ public class App extends Application {
         
         //when the key is pressed
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-//            System.out.println("key event received");
             highlightKey(event);
             displayKeyPressed(event);
             
