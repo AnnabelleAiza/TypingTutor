@@ -21,6 +21,7 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
     private Map<KeyCode, Button> keyButtons = new HashMap<>();
+    private boolean shiftPressed = false;
 
     @Override
     public void start(Stage stage) {
@@ -40,7 +41,6 @@ public class App extends Application {
         HBox responseBox = new HBox(5, responseLabel, response);
         
         Label keyLabel = new Label("Key Pressed:");
-        Label keyPressedLabel = new Label("None");
         HBox pressedKeyBox = new HBox(10, keyLabel, keyPressedLabel);
         
         Label correctKeysLabel = new Label("Correct: 0");
@@ -67,6 +67,7 @@ public class App extends Application {
         };
 
         //button actions
+        counterLabel.setText(texts[0]);
         int[] idxCurrentText = {0};
 
         nextButton.setOnAction(event -> {
@@ -148,9 +149,6 @@ public class App extends Application {
         
         keyboardBox.getChildren().addAll(row1, row2, row3, row4);
 
-        root.getChildren().addAll(title, inputBox, responseBox, pressedKeyBox,
-                keysBox, counterLabel, control, keyboardBox);
-
         //add buttons and keycodes to keycode hash map
         root.getChildren().addAll(title, inputBox, responseBox, pressedKeyBox,
                 keysBox, counterLabel, control, keyboardBox);
@@ -199,9 +197,20 @@ public class App extends Application {
             System.out.println("Key pressed: " + event.getCode());
             
             highlightKey(event);
+            displayKeyPressed(event);
+            
+            if(event.getCode() == KeyCode.SHIFT){
+                    shiftPressed = true;
+            }
             
             if (event.getText().length() > 0) {
-                response.appendText(event.getText());
+                String keyText = event.getText();
+                
+                if(shiftPressed){
+                    keyText = keyText.toUpperCase();
+                }
+                
+                response.appendText(keyText);
             }
             
             if (event.getCode() == KeyCode.BACK_SPACE){
@@ -211,24 +220,39 @@ public class App extends Application {
                     response.deleteText(current.length() - 1, current.length());
                 }
             }
+            
+            if (event.getCode() == KeyCode.SPACE){
+                String current = response.getText();
+                
+                if(!current.isEmpty()) {
+                    current = (current + " ");
+                }
+            }
         });
 
         scene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
             stopHighlightKey(event);
-        });
             
-//            if (event.getCode() == KeyCode.SHIFT){
-//                if(){
-////if all the words match up then shift is next, if not send a message ssying "incorrect text"
-//                    
-//                }
-//            }
+            if (event.getText().length() > 0) {
+                String keyText = event.getText();
+                
+                if(!shiftPressed){
+                    response.appendText(keyText);
+                }
+            }
+        });
  
         stage.setScene(scene);
         stage.setOnShown(event -> root.requestFocus());
         stage.show();
     }
    
+    //key pressed
+    Label keyPressedLabel = new Label("None");
+    
+    private void displayKeyPressed(KeyEvent event){
+        keyPressedLabel.setText(event.getCode().toString());
+    }
     
     //highlighting key when touched
     /**
